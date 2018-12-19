@@ -16,6 +16,12 @@
 	DISK_TOTAL=$((total_blks / gbfactor ))
 	DISK_AVAIL=$((avail_blks / gbfactor ))
 
+	# Enter working directory
+	cd $SRC_LOCATION
+
+	# Legacy path support (ln -s for boost/wasm) | TODO: Remove reliance on $HOME/opt for /opt
+	mkdir -p $HOME/opt
+
 	printf "\\nOS name: ${OS_NAME}\\n"
 	printf "OS Version: ${OS_VER}\\n"
 	printf "CPU speed: ${CPU_SPEED}Mhz\\n"

@@ -239,7 +239,7 @@
 	function print_instructions()
 	{
 		printf "%s -f %s &\\n" "$( command -v mongod )" "${MONGODB_CONF}"
-		printf "export PATH=/opt/mongodb/bin:$PATH\n"
+		printf "Ensure ${MONGO_ROOT}/bin is in your \$PATH"
 		printf "cd %s; make test\\n\\n" "${BUILD_DIR}"
 		return 0
 	}

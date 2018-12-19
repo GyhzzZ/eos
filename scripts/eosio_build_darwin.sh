@@ -17,6 +17,7 @@
 	DISK_AVAIL=$((avail_blks / gbfactor ))
 
 	# Enter working directory
+	mkdir -p $SRC_LOCATION
 	cd $SRC_LOCATION
 
 	# Legacy path support (ln -s for boost/wasm) | TODO: Remove reliance on $HOME/opt for /opt

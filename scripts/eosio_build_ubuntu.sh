@@ -57,8 +57,8 @@
 		;;
 		"Debian")
 			if [ $OS_MAJ -lt 10 ]; then
-				printf "\tYou must be running Debian 10 to install EOSIO, and resolve missing dependencies from unstable (sid).\n"
-				printf "\tExiting now.\n"
+				printf "You must be running Debian 10 to install EOSIO, and resolve missing dependencies from unstable (sid).\n"
+				printf "Exiting now.\n"
 				exit 1
 		fi
 		;;
@@ -263,7 +263,7 @@
 
 	function print_instructions()
 	{
-		printf '\n\texport PATH=/opt/mongodb/bin:$PATH\n'
+		printf '\nexport PATH=/opt/mongodb/bin:$PATH\n'
 		printf "%s -f %s &\\n" "$( command -v mongod )" "${MONGOD_CONF}"
 		printf "cd %s; make test\\n\\n" "${BUILD_DIR}"
 	return 0

@@ -265,8 +265,8 @@
 
 	function print_instructions()
 	{
-		printf "%s -f %s &\\n" "$( command -v mongod )" "${MONGOD_CONF}"
-		printf "Ensure ${MONGO_ROOT}/bin is in your \$PATH"
-		printf "cd %s; make test\\n\\n" "${BUILD_DIR}"
+		printf "$( command -v mongod ) -f ${MONGODB_CONF} &\\n"
+		printf "Ensure ${MONGO_ROOT}/bin is in your \$PATH \\n"
+		printf "cd ${BUILD_DIR}; make test\\n"
 	return 0
 	}

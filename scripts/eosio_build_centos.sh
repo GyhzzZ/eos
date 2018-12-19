@@ -302,7 +302,7 @@
 
 	function print_instructions()
 	{
-		printf "%s -f %s &\\n" "$( command -v mongod )" "${MONGODB_CONF}"
+		printf "$( command -v mongod ) -f ${MONGODB_CONF} &\\n"
 		printf "source /opt/rh/python33/enable\\n"
 		printf "Ensure ${MONGO_ROOT}/bin is in your \$PATH"
 		printf "cd ${BUILD_DIR}; make test\\n\\n"

@@ -282,7 +282,7 @@
 
 	function print_instructions()
 	{
-		printf "\\n%s -f %s &\\n" "$( command -v mongod )" "${MONGODB_CONF}"
-		printf "cd %s; make test\\n\\n" "${BUILD_DIR}"
+		printf "$( command -v mongod ) -f ${MONGODB_CONF} &\\n"
+		printf "cd ${BUILD_DIR}; make test\\n"
 	return 0
 	}

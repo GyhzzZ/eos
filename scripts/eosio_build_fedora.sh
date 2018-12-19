@@ -221,7 +221,7 @@
 		&& mkdir build \
 		&& cd build \
 		&& cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=.. -DLLVM_TARGETS_TO_BUILD= -DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly -DLLVM_ENABLE_RTTI=1 -DCMAKE_BUILD_TYPE=Release .. \
-		&& make -j1 \
+		&& make -j$(nproc) \
 		&& make install \
 		&& cd ../.. \
 		&& rm -f $HOME/opt/wasm \

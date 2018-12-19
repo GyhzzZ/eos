@@ -205,7 +205,7 @@
 	printf "Checking MongoDB installation...\\n"
 	# eosio_build.sh sets PATH with /opt/mongodb/bin
     if [ ! -e $MONGODB_CONF ]; then
-		printf "Installing MongoDB...\\n"
+		printf "Installing MongoDB into ${MONGO_ROOT}...\\n"
 		mkdir -p /opt \
 		&& curl -OL https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-$MONGODB_VERSION.tgz \
 		&& tar -xzvf mongodb-osx-ssl-x86_64-$MONGODB_VERSION.tgz \
@@ -217,9 +217,9 @@
 		&& mv $SOURCE_DIR/scripts/mongod.conf $MONGO_ROOT/mongod.conf \
 		&& mkdir -p /data/db \
 		&& mkdir -p /var/log/mongodb
-		printf " - MongoDB successfully installed @ ${$MONGO_ROOT}\\n"
+		printf " - MongoDB successfully installed @ ${MONGO_ROOT}\\n"
 	else
-		printf " - MongoDB found with correct version @ ${$MONGO_ROOT}.\\n"
+		printf " - MongoDB found with correct version @ ${MONGO_ROOT}.\\n"
 	fi
 	printf "Checking MongoDB C driver installation...\\n"
 	if [ ! -d $MONGO_C_DRIVER_ROOT ]; then
@@ -234,9 +234,9 @@
 		&& make install \
 		&& cd ../.. \
 		&& rm mongo-c-driver-$MONGO_C_DRIVER_VERSION.tar.gz
-		printf " - MongoDB C driver successfully installed @ ${$MONGO_C_DRIVER_ROOT}.\\n"
+		printf " - MongoDB C driver successfully installed @ ${MONGO_C_DRIVER_ROOT}.\\n"
 	else
-		printf " - MongoDB C driver found with correct version @ ${$MONGO_C_DRIVER_ROOT}.\\n"
+		printf " - MongoDB C driver found with correct version @ ${MONGO_C_DRIVER_ROOT}.\\n"
 	fi
 	printf "Checking MongoDB C++ driver installation...\\n"
 	if [ ! -d $MONGO_CXX_DRIVER_ROOT ]; then

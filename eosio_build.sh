@@ -228,6 +228,7 @@
    fi
 
    if [ "$ARCH" == "Darwin" ]; then
+      export SRC_LOCATION=$HOME/src
       export OS_NAME=MacOSX
       FILE="${SOURCE_DIR}/scripts/eosio_build_darwin.sh"
       CXX_COMPILER=clang++

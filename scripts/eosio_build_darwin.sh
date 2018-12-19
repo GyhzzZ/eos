@@ -56,9 +56,7 @@
 		printf "Exiting now.\\n"
 		exit 1
 	fi
-
-	printf "xcode-select installation found @ \\n"
-	printf "%s \\n\\n" "${XCODESELECT}"
+	printf "xcode-select installation found @ ${XCODESELECT}\\n"
 
 	printf "Checking Ruby installation.\\n"
 	if ! RUBY=$( command -v ruby)
@@ -67,9 +65,7 @@
 		printf "Exiting now.\\n"
 		exit 1
 	fi
-
-	printf "Ruby installation found @ \\n"
-	printf "%s \\n\\n" "${RUBY}"
+	printf "Ruby installation found @ ${RUBY}\\n"
 
 	printf "Checking Home Brew installation\\n"
 	if ! BREW=$( command -v brew )
@@ -95,8 +91,7 @@
 		done
 	fi
 
-	printf "Home Brew installation found @\\n"
-	printf "%s\\n\\n" "${BREW}"
+	printf "Home Brew installation found @ ${BREW}\\n"
 
 	COUNT=1
 	PERMISSION_GETTEXT=0

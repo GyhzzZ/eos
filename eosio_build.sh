@@ -237,10 +237,11 @@
       exit -1
    fi
 
-   . "$FILE"
+   . "$FILE" # Execute OS specific build file
 
-   printf "\\n###################################################################"
-   printf "\\n# ALL dependencies sucessfully found or installed . Installing EOSIO!\\n"
+   printf "\\n#####################################################################"
+   printf "\\n#####################################################################"
+   printf "\\n# All dependencies sucessfully found or installed . Installing EOSIO!\\n"
    printf "## CMAKE_BUILD_TYPE=%s\\n" "${CMAKE_BUILD_TYPE}"
    printf "## ENABLE_COVERAGE_TESTING=%s\\n" "${ENABLE_COVERAGE_TESTING}"
    printf "## DOXYGEN=%s\\n\\n" "${DOXYGEN}"

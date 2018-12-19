@@ -189,9 +189,9 @@
 		&& make install \
 		&& cd ../.. \
 		&& rm mongo-c-driver-$MONGO_C_DRIVER_VERSION.tar.gz
-		printf " - MongoDB C driver successfully installed @ ${$MONGO_C_DRIVER_ROOT}.\\n"
+		printf " - MongoDB C driver successfully installed @ ${MONGO_C_DRIVER_ROOT}.\\n"
 	else
-		printf " - MongoDB C driver found with correct version @ ${$MONGO_C_DRIVER_ROOT}.\\n"
+		printf " - MongoDB C driver found with correct version @ ${MONGO_C_DRIVER_ROOT}.\\n"
 	fi
 	printf "Checking MongoDB C++ driver installation...\\n"
 	if [ ! -d $MONGO_CXX_DRIVER_ROOT ]; then

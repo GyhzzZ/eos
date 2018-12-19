@@ -239,6 +239,6 @@
 	{
 		printf "$( command -v mongod ) -f ${MONGODB_CONF} &\\n"
 		printf "Ensure ${MONGO_ROOT}/bin is in your \$PATH"
-		printf "cd %s; make test\\n\\n" "${BUILD_DIR}"
+		printf "cd ${BUILD_DIR}; make test\\n\\n"
 	return 0;
 	}

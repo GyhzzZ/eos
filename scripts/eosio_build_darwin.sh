@@ -185,71 +185,71 @@
 
 
 	printf "Checking Boost library (${BOOST_VERSION}) installation...\\n"
-    if [ ! -d ${SRC_LOCATION}/boost_${BOOST_VERSION} ]; then
+    if [ ! -d $BOOST_ROOT ]; then
 		printf "Installing Boost library...\\n"
-		curl -LO https://dl.bintray.com/boostorg/release/${BOOST_VERSION_MAJOR}.${BOOST_VERSION_MINOR}.${BOOST_VERSION_PATCH}/source/boost_${BOOST_VERSION}.tar.bz2 \
-		&& tar -xf boost_${BOOST_VERSION}.tar.bz2 \
-		&& cd boost_${BOOST_VERSION}/ \
+		curl -LO https://dl.bintray.com/boostorg/release/$BOOST_VERSION_MAJOR.$BOOST_VERSION_MINOR.$BOOST_VERSION_PATCH/source/boost_$BOOST_VERSION.tar.bz2 \
+		&& tar -xf boost_$BOOST_VERSION.tar.bz2 \
+		&& cd boost_$BOOST_VERSION/ \
 		&& ./bootstrap.sh "--prefix=${SRC_LOCATION}/boost_${BOOST_VERSION}" \
 		&& ./b2 -q -j$(sysctl -in machdep.cpu.core_count) install \
 		&& cd .. \
-		&& rm -f boost_${BOOST_VERSION}.tar.bz2 \
+		&& rm -f boost_$BOOST_VERSION.tar.bz2 \
 		&& rm -rf $HOME/opt/boost \
-		&& ln -s /usr/local/src/boost_${BOOST_VERSION} $HOME/opt/boost
-		printf " - Boost library successfully installed @ %s.\\n\\n"
+		&& ln -s $BOOST_ROOT $HOME/opt/boost
+		printf " - Boost library successfully installed @ ${BOOST_ROOT}.\\n"
 	else
-		printf " - Boost library found with correct version.\\n"
+		printf " - Boost library found with correct version @ ${BOOST_ROOT}.\\n"
 	fi
 
 
 	printf "Checking MongoDB installation...\\n"
 	# eosio_build.sh sets PATH with /opt/mongodb/bin
-    if [ ! -e "${MONGODB_CONF}" ]; then
+    if [ ! -e $MONGODB_CONF ]; then
 		printf "Installing MongoDB...\\n"
 		mkdir -p /opt \
-		&& curl -OL https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-${MONGODB_VERSION}.tgz \
-		&& tar -xzvf mongodb-osx-ssl-x86_64-${MONGODB_VERSION}.tgz \
-		&& mv ${SRC_LOCATION}/mongodb-osx-ssl-x86_64-${MONGODB_VERSION} /opt/mongodb \
-		&& mkdir /opt/mongodb/data \
-		&& mkdir /opt/mongodb/log \
-		&& touch /opt/mongodb/log/mongod.log \
-		&& rm -f mongodb-osx-ssl-x86_64-${MONGODB_VERSION}.tgz \
-		&& mv ${SOURCE_DIR}/scripts/mongod.conf /opt/mongodb/mongod.conf \
+		&& curl -OL https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-$MONGODB_VERSION.tgz \
+		&& tar -xzvf mongodb-osx-ssl-x86_64-$MONGODB_VERSION.tgz \
+		&& mv $SRC_LOCATION/mongodb-osx-ssl-x86_64-$MONGODB_VERSION $MONGO_ROOT \
+		&& mkdir $MONGO_ROOT/data \
+		&& mkdir $MONGO_ROOT/log \
+		&& touch $MONGO_ROOT/log/mongod.log \
+		&& rm -f mongodb-osx-ssl-x86_64-$MONGODB_VERSION.tgz \
+		&& mv $SOURCE_DIR/scripts/mongod.conf $MONGO_ROOT/mongod.conf \
 		&& mkdir -p /data/db \
 		&& mkdir -p /var/log/mongodb
-		printf " - MongoDB successfully installed @ /opt/mongodb.\\n"
+		printf " - MongoDB successfully installed @ ${$MONGO_ROOT}\\n"
 	else
-		printf " - MongoDB found with correct version."
+		printf " - MongoDB found with correct version @ ${$MONGO_ROOT}.\\n"
 	fi
 	printf "Checking MongoDB C driver installation...\\n"
-	if [ ! -e "${SRC_LOCATION}/mongo-c-driver-${MONGO_C_DRIVER_VERSION}" ]; then
+	if [ ! -d $MONGO_C_DRIVER_ROOT ]; then
 		printf "Installing MongoDB C driver...\\n"
-		curl -LO https://github.com/mongodb/mongo-c-driver/releases/download/${MONGO_C_DRIVER_VERSION}/mongo-c-driver-${MONGO_C_DRIVER_VERSION}.tar.gz \
-		&& tar -xf mongo-c-driver-${MONGO_C_DRIVER_VERSION}.tar.gz \
-		&& cd mongo-c-driver-${MONGO_C_DRIVER_VERSION} \
+		curl -LO https://github.com/mongodb/mongo-c-driver/releases/download/$MONGO_C_DRIVER_VERSION/mongo-c-driver-$MONGO_C_DRIVER_VERSION.tar.gz \
+		&& tar -xf mongo-c-driver-$MONGO_C_DRIVER_VERSION.tar.gz \
+		&& cd mongo-c-driver-$MONGO_C_DRIVER_VERSION \
 		&& mkdir -p cmake-build \
 		&& cd cmake-build \
 		&& cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DENABLE_BSON=ON -DENABLE_SSL=DARWIN -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF -DENABLE_STATIC=ON .. \
-		&& make -j$(sysctl -in machdep.cpu.core_count) \
+		&& make -j$(nproc) \
 		&& make install \
 		&& cd ../.. \
-		&& rm mongo-c-driver-${MONGO_C_DRIVER_VERSION}.tar.gz
-		printf " - MongoDB C driver successfully installed @ .\\n"
+		&& rm mongo-c-driver-$MONGO_C_DRIVER_VERSION.tar.gz
+		printf " - MongoDB C driver successfully installed @ ${$MONGO_C_DRIVER_ROOT}.\\n"
 	else
-		printf " - MongoDB C driver found with correct version.\\n"
+		printf " - MongoDB C driver found with correct version @ ${$MONGO_C_DRIVER_ROOT}.\\n"
 	fi
 	printf "Checking MongoDB C++ driver installation...\\n"
-	if [ ! -e "${SRC_LOCATION}/mongo-cxx-driver-${MONGO_CXX_DRIVER_VERSION}" ]; then
+	if [ ! -d $MONGO_CXX_DRIVER_ROOT ]; then
 		printf "Installing MongoDB C++ driver...\\n"
-		git clone https://github.com/mongodb/mongo-cxx-driver.git --branch releases/v${MONGO_CXX_DRIVER_VERSION} --depth 1 mongo-cxx-driver-${MONGO_CXX_DRIVER_VERSION} \
-		&& cd mongo-cxx-driver-${MONGO_CXX_DRIVER_VERSION}/build \
+		git clone https://github.com/mongodb/mongo-cxx-driver.git --branch releases/v$MONGO_CXX_DRIVER_VERSION --depth 1 mongo-cxx-driver-$MONGO_CXX_DRIVER_VERSION \
+		&& cd mongo-cxx-driver-$MONGO_CXX_DRIVER_VERSION/build \
 		&& cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local .. \
-		&& make -j$(sysctl -in machdep.cpu.core_count) VERBOSE=1 \
+		&& make -j$(nproc) VERBOSE=1 \
 		&& make install \
 		&& cd ../..
-		printf " - MongoDB C++ driver successfully installed @ %s.\\n"
+		printf " - MongoDB C++ driver successfully installed @ ${MONGO_CXX_DRIVER_ROOT}.\\n"
 	else
-		printf " - MongoDB C++ driver found with correct version.\\n"
+		printf " - MongoDB C++ driver found with correct version @ ${MONGO_CXX_DRIVER_ROOT}.\\n"
 	fi
 
 
@@ -257,11 +257,11 @@
 
 
 	printf "Checking LLVM with WASM support...\\n"
-	if [ ! -d "${SRC_LOCATION}/llvm-${LLVM_CLANG_VERSION}" ]; then
+	if [ ! -d $LLVM_CLANG_ROOT ]; then
 		printf "Installing LLVM with WASM...\\n"
-		git clone --depth 1 --single-branch --branch ${LLVM_CLANG_VERSION} https://github.com/llvm-mirror/llvm.git llvm-$LLVM_CLANG_VERSION \
+		git clone --depth 1 --single-branch --branch $LLVM_CLANG_VERSION https://github.com/llvm-mirror/llvm.git llvm-$LLVM_CLANG_VERSION \
 		&& cd llvm-$LLVM_CLANG_VERSION/tools \
-		&& git clone --depth 1 --single-branch --branch ${LLVM_CLANG_VERSION} https://github.com/llvm-mirror/clang.git clang-$LLVM_CLANG_VERSION \
+		&& git clone --depth 1 --single-branch --branch $LLVM_CLANG_VERSION https://github.com/llvm-mirror/clang.git clang-$LLVM_CLANG_VERSION \
 		&& cd .. \
 		&& mkdir build \
 		&& cd build \
@@ -270,10 +270,10 @@
 		&& make install \
 		&& cd ../.. \
 		&& rm -f /usr/local/wasm \
-		&& ln -s /usr/local/src/llvm-$LLVM_CLANG_VERSION /usr/local/wasm
-		printf " - WASM compiler successfully installed at ${SRC_LOCATION}/llvm-${LLVM_CLANG_VERSION} (Symlinked to ${HOME}/opt/wasm)\\n"
+		&& ln -s $LLVM_CLANG_ROOT /usr/local/wasm
+		printf "WASM compiler successfully installed @ ${LLVM_CLANG_ROOT} (Symlinked to /usr/local/wasm)\\n"
 	else
-		printf " - WASM found at ${SRC_LOCATION}/llvm-${LLVM_CLANG_VERSION}\\n"
+		printf " - WASM found @ ${LLVM_CLANG_ROOT} (Symlinked to /usr/local/wasm).\\n"
 	fi
 
 

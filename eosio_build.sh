@@ -31,19 +31,24 @@
 ##########################################################################
 
    VERSION=2.0 # Build script version
+   export SRC_LOCATION=/usr/local/src
 	export CMAKE_VERSION_MAJOR=3
 	export CMAKE_VERSION_MINOR=10
 	export CMAKE_VERSION_PATCH=2
 	export CMAKE_VERSION=${CMAKE_VERSION_MAJOR}.${CMAKE_VERSION_MINOR}.${CMAKE_VERSION_PATCH}
 	export MONGODB_VERSION=3.6.3
+   export MONGO_ROOT=/opt/mongodb
 	export MONGO_C_DRIVER_VERSION=1.10.2
+   export MONGO_C_DRIVER_ROOT=${SRC_LOCATION}/mongo-c-driver-${MONGO_C_DRIVER_VERSION}
 	export MONGO_CXX_DRIVER_VERSION=3.3
-	export SRC_LOCATION=/usr/local/src
+   export MONGO_CXX_DRIVER_ROOT=${SRC_LOCATION}/mongo-cxx-driver-${MONGO_CXX_DRIVER_VERSION}
 	export BOOST_VERSION_MAJOR=1
 	export BOOST_VERSION_MINOR=67
 	export BOOST_VERSION_PATCH=0
 	export BOOST_VERSION=${BOOST_VERSION_MAJOR}_${BOOST_VERSION_MINOR}_${BOOST_VERSION_PATCH}
+   export BOOST_ROOT="${SRC_LOCATION}/boost_${BOOST_VERSION}"
 	export LLVM_CLANG_VERSION=release_40
+   export LLVM_CLANG_ROOT=${SRC_LOCATION}/llvm-${LLVM_CLANG_VERSION}
 	export TINI_VERSION=0.18.0
    
    SOURCE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -178,7 +183,6 @@
       export MONGODB_CONF=/opt/mongodb/mongod.conf
       export LLVM_DIR=$SRC_LOCATION/llvm-$LLVM_CLANG_VERSION/lib/cmake/llvm
       export PATH=/opt/mongodb/bin:$PATH
-      export BOOST_ROOT="${SRC_LOCATION}/boost_${BOOST_VERSION}"
       OPENSSL_ROOT_DIR=/usr/include/openssl
       case "$OS_NAME" in
          "Amazon Linux AMI"|"Amazon Linux")

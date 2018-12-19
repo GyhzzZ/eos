@@ -304,7 +304,7 @@
 	{
 		printf "%s -f %s &\\n" "$( command -v mongod )" "${MONGODB_CONF}"
 		printf "source /opt/rh/python33/enable\\n"
-		printf "export PATH=/opt/mongodb/bin:$PATH\n"
+		printf "Ensure ${MONGO_ROOT}/bin is in your \$PATH"
 		printf "cd ${BUILD_DIR}; make test\\n\\n"
 		return 0
 	}

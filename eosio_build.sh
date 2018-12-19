@@ -58,7 +58,6 @@
       BUILD_DIR="${PWD}"
    fi
 
-   ARCH=$( uname )
    CMAKE_BUILD_TYPE=Release
    DISK_MIN=20
    DOXYGEN=false
@@ -159,6 +158,8 @@
    printf "User: %s\\n" "$( whoami )"
    # printf "git head id: %s\\n" "$( cat .git/refs/heads/master )"
    printf "Current branch: %s\\n" "$( git rev-parse --abbrev-ref HEAD )"
+
+   ARCH=$( uname )
    printf "\\nARCHITECTURE: %s\\n" "${ARCH}"
 
    popd &> /dev/null
@@ -227,6 +228,7 @@
    fi
 
    if [ "$ARCH" == "Darwin" ]; then
+      export OS_NAME=$ARCH
       FILE="${SOURCE_DIR}/scripts/eosio_build_darwin.sh"
       CXX_COMPILER=clang++
       C_COMPILER=clang

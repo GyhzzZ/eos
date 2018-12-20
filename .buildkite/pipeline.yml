@@ -59,7 +59,7 @@ steps:
         region: "us-west-2"
       docker#v2.1.0:
         debug: true
-        image: "436617320021.dkr.ecr.us-west-2.amazonaws.com/ci:centos"
+        image: "436617320021.dkr.ecr.us-west-2.amazonaws.com/ci:centos7"
         workdir: /data/job
     timeout: 60
 

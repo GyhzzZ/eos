@@ -72,10 +72,10 @@
 	COUNT=1
 	DISPLAY=""
 	DEP=""
-	printf "Checking YUM for installed dependencies...\\n"
+	printf "Checking RPM for installed dependencies...\\n"
 	for (( i=0; i<${#DEP_ARRAY[@]}; i++ )); do
 		pkg=$( rpm -qi "${DEP_ARRAY[$i]}" 2>/dev/null | grep Name )
-		if [ -z $pkg ]; then
+		if [[ -z $pkg ]]; then
 			DEP=$DEP" ${DEP_ARRAY[$i]} "
 			DISPLAY="${DISPLAY}${COUNT}. ${DEP_ARRAY[$i]}\\n"
 			printf "!! Package %s ${bldred} NOT ${txtrst} found !!\\n" "${DEP_ARRAY[$i]}"
@@ -85,10 +85,9 @@
 			continue
 		fi
 	done
-	printf "\\n"
 	if [ "${COUNT}" -gt 1 ]; then
 		printf "The following dependencies are required to install EOSIO.\\n"
-		printf "${DISPLAY}\\n\\n"
+		printf "${DISPLAY}\\n
 		printf "Do you wish to install these dependencies?\\n"
 		select yn in "Yes" "No"; do
 			case $yn in

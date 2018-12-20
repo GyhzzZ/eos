@@ -3,7 +3,7 @@
 
 	MEM_MEG=$( free -m | sed -n 2p | tr -s ' ' | cut -d\  -f2 )
 	CPU_SPEED=$( lscpu | grep "MHz" | tr -s ' ' | cut -d\  -f3 | cut -d'.' -f1 )
-	CPU_CORE=$( lscpu -pCPU | grep -v "#" | wc -l )
+	CPU_CORE=$( nproc )
 	MEM_GIG=$(( ((MEM_MEG / 1000) / 2) ))
 	JOBS=$(( MEM_GIG > CPU_CORE ? CPU_CORE : MEM_GIG ))
 
@@ -189,7 +189,7 @@
     	&& tar xf cmake-$CMAKE_VERSION.tar.gz \
     	&& cd cmake-$CMAKE_VERSION \
     	&& ./bootstrap \
-    	&& make -j$( nproc ) \
+    	&& make -j"${CPU_CORE}" \
     	&& make install \
     	&& cd .. \
     	&& rm -f cmake-$CMAKE_VERSION.tar.gz
@@ -208,12 +208,12 @@
 		curl -LO https://dl.bintray.com/boostorg/release/$BOOST_VERSION_MAJOR.$BOOST_VERSION_MINOR.$BOOST_VERSION_PATCH/source/boost_$BOOST_VERSION.tar.bz2 \
 		&& tar -xf boost_$BOOST_VERSION.tar.bz2 \
 		&& cd boost_$BOOST_VERSION/ \
-		&& ./bootstrap.sh "--prefix=${SRC_LOCATION}/boost_${BOOST_VERSION}" \
-		&& ./b2 -q -j$( nproc ) install \
+		&& ./bootstrap.sh "--prefix=${BOOST_ROOT}" \
+		&& ./b2 -q -j"${CPU_CORE}" install \
 		&& cd .. \
 		&& rm -f boost_$BOOST_VERSION.tar.bz2 \
-		&& rm -rf $HOME/opt/boost \
-		&& ln -s $BOOST_ROOT $HOME/opt/boost
+		&& rm -rf $BOOST_LINK_LOCATION \
+		&& ln -s $BOOST_ROOT $BOOST_LINK_LOCATION
 		printf " - Boost library successfully installed @ ${BOOST_ROOT}.\\n"
 	else
 		printf " - Boost library found with correct version @ ${BOOST_ROOT}.\\n"
@@ -222,24 +222,21 @@
 
 	printf "\\n"
 
-
 	printf "Checking MongoDB installation...\\n"
-	# eosio_build.sh sets PATH with /opt/mongodb/bin
-    if [ ! -e $MONGODB_CONF ]; then
-		printf "Installing MongoDB...\\n"
-		curl -OL https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-amazon-$MONGODB_VERSION.tgz \
+    if [ ! -d $MONGODB_ROOT ]; then
+		printf "Installing MongoDB into ${MONGODB_ROOT}...\\n"
+		curl -OL https://fastdl.mongodb.org/osx/mongodb-linux-x86_64-amazon-$MONGODB_VERSION.tgz \
 		&& tar -xzvf mongodb-linux-x86_64-amazon-$MONGODB_VERSION.tgz \
-		&& mv $SRC_LOCATION/mongodb-linux-x86_64-amazon-$MONGODB_VERSION $MONGO_ROOT \
-		&& mkdir $MONGO_ROOT/data \
-		&& mkdir $MONGO_ROOT/log \
-		&& touch $MONGO_ROOT/log/mongod.log \
+		&& mv $SRC_LOCATION/mongodb-linux-x86_64-amazon-$MONGODB_VERSION $MONGODB_ROOT \
+		&& touch $MONGODB_LOG_LOCATION/mongod.log \
 		&& rm -f mongodb-linux-x86_64-amazon-$MONGODB_VERSION.tgz \
-		&& mv $SOURCE_DIR/scripts/mongod.conf $MONGO_ROOT/mongod.conf \
+		&& mv $SOURCE_DIR/scripts/mongod.conf.linux $MONGODB_CONF \
 		&& mkdir -p /data/db \
-		&& mkdir -p /var/log/mongodb
-		printf " - MongoDB successfully installed @ ${MONGO_ROOT}.\\n"
+		&& rm -rf $MONGODB_LINK_LOCATION \
+		&& ln -s $MONGODB_ROOT $MONGODB_LINK_LOCATION
+		printf " - MongoDB successfully installed @ ${MONGODB_ROOT} (Symlinked to ${MONGODB_LINK_LOCATION}).\\n"
 	else
-		printf " - MongoDB found with correct version @ ${MONGO_ROOT}.\\n"
+		printf " - MongoDB found with correct version @ ${MONGODB_ROOT} (Symlinked to ${MONGODB_LINK_LOCATION}).\\n"
 	fi
 	printf "Checking MongoDB C driver installation...\\n"
 	if [ ! -d $MONGO_C_DRIVER_ROOT ]; then
@@ -250,7 +247,7 @@
 		&& mkdir -p cmake-build \
 		&& cd cmake-build \
 		&& cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DENABLE_BSON=ON -DENABLE_SSL=OPENSSL -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF -DENABLE_STATIC=ON .. \
-		&& make -j$(nproc) \
+		&& make -j"${CPU_CORE}" \
 		&& make install \
 		&& cd ../.. \
 		&& rm mongo-c-driver-$MONGO_C_DRIVER_VERSION.tar.gz
@@ -264,7 +261,7 @@
 		git clone https://github.com/mongodb/mongo-cxx-driver.git --branch releases/v$MONGO_CXX_DRIVER_VERSION --depth 1 mongo-cxx-driver-$MONGO_CXX_DRIVER_VERSION \
 		&& cd mongo-cxx-driver-$MONGO_CXX_DRIVER_VERSION/build \
 		&& cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local .. \
-		&& make -j$(nproc) VERBOSE=1 \
+		&& make -j"${CPU_CORE}" VERBOSE=1 \
 		&& make install \
 		&& cd ../..
 		printf " - MongoDB C++ driver successfully installed @ ${MONGO_CXX_DRIVER_ROOT}.\\n"
@@ -286,14 +283,14 @@
 		&& mkdir build \
 		&& cd build \
 		&& cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=.. -DLLVM_TARGETS_TO_BUILD= -DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly -DLLVM_ENABLE_RTTI=1 -DCMAKE_BUILD_TYPE=Release .. \
-		&& make -j$(nproc) \
+		&& make -j"${CPU_CORE}" \
 		&& make install \
 		&& cd ../.. \
-		&& rm -f $HOME/opt/wasm \
-		&& ln -s $LLVM_CLANG_ROOT $HOME/opt/wasm
-		printf "WASM compiler successfully installed @ ${LLVM_CLANG_ROOT} (Symlinked to ${HOME}/opt/wasm)\\n"
+		&& rm -rf $LLVM_LINK_LOCATION \
+		&& ln -s $LLVM_CLANG_ROOT $LLVM_LINK_LOCATION
+		printf "WASM compiler successfully installed @ ${LLVM_CLANG_ROOT} (Symlinked to ${LLVM_LINK_LOCATION})\\n"
 	else
-		printf " - WASM found @ ${LLVM_CLANG_ROOT} (Symlinked to ${HOME}/opt/wasm).\\n"
+		printf " - WASM found @ ${LLVM_CLANG_ROOT} (Symlinked to ${LLVM_LINK_LOCATION}).\\n"
 	fi
 
 
@@ -304,7 +301,7 @@
 	{
 		printf "$( command -v mongod ) -f ${MONGODB_CONF} &\\n"
 		printf "source /opt/rh/python33/enable\\n"
-		printf "Ensure ${MONGO_ROOT}/bin is in your \$PATH"
+		printf "Ensure ${MONGODB_ROOT}/bin is in your \$PATH"
 		printf "cd ${BUILD_DIR}; make test\\n\\n"
 		return 0
 	}

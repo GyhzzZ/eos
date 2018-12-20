@@ -20,9 +20,6 @@
 	mkdir -p $SRC_LOCATION
 	cd $SRC_LOCATION
 
-	# Legacy path support (ln -s for boost/wasm) | TODO: Remove reliance on $HOME/opt for /opt
-	mkdir -p $HOME/opt
-
 	printf "\\nOS name: ${OS_NAME}\\n"
 	printf "OS Version: ${OS_VER}\\n"
 	printf "CPU speed: ${CPU_SPEED}Mhz\\n"
@@ -190,14 +187,14 @@
     if [ ! -d $BOOST_ROOT ]; then
 		printf "Installing Boost library...\\n"
 		curl -LO https://dl.bintray.com/boostorg/release/$BOOST_VERSION_MAJOR.$BOOST_VERSION_MINOR.$BOOST_VERSION_PATCH/source/boost_$BOOST_VERSION.tar.bz2 \
-		&& tar -xf boost_$BOOST_VERSION.tar.bz2 \
-		&& cd boost_$BOOST_VERSION/ \
+		&& tar -xvf boost_$BOOST_VERSION.tar.bz2 \
+		&& cd boost_$BOOST_VERSION \
 		&& ./bootstrap.sh "--prefix=${SRC_LOCATION}/boost_${BOOST_VERSION}" \
 		&& ./b2 -q -j$(sysctl -in machdep.cpu.core_count) install \
 		&& cd .. \
-		&& rm -f boost_$BOOST_VERSION.tar.bz2 \
-		&& rm -rf $HOME/opt/boost \
-		&& ln -s $BOOST_ROOT $HOME/opt/boost
+		&& rm -f boost_$BOOST_VERSION.tar.bz2
+		&& rm -rf $BOOST_LINK_LOCATION \
+		&& ln -s $BOOST_ROOT $BOOST_LINK_LOCATION
 		printf " - Boost library successfully installed @ ${BOOST_ROOT}.\\n"
 	else
 		printf " - Boost library found with correct version @ ${BOOST_ROOT}.\\n"
@@ -205,53 +202,20 @@
 
 
 	printf "Checking MongoDB installation...\\n"
-	# eosio_build.sh sets PATH with /opt/mongodb/bin
-    if [ ! -e $MONGODB_CONF ]; then
-		printf "Installing MongoDB into ${MONGO_ROOT}...\\n"
-		mkdir -p /opt \
-		&& curl -OL https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-$MONGODB_VERSION.tgz \
+    if [ ! -d $MONGODB_ROOT ]; then
+		printf "Installing MongoDB into ${MONGODB_ROOT}...\\n"
+		curl -OL https://fastdl.mongodb.org/osx/mongodb-osx-ssl-x86_64-$MONGODB_VERSION.tgz \
 		&& tar -xzvf mongodb-osx-ssl-x86_64-$MONGODB_VERSION.tgz \
-		&& mv $SRC_LOCATION/mongodb-osx-ssl-x86_64-$MONGODB_VERSION $MONGO_ROOT \
-		&& mkdir $MONGO_ROOT/data \
-		&& mkdir $MONGO_ROOT/log \
-		&& touch $MONGO_ROOT/log/mongod.log \
+		&& mv $SRC_LOCATION/mongodb-osx-x86_64-$MONGODB_VERSION $MONGODB_ROOT \
+		&& touch $MONGODB_LOG_LOCATION/mongod.log \
 		&& rm -f mongodb-osx-ssl-x86_64-$MONGODB_VERSION.tgz \
-		&& mv $SOURCE_DIR/scripts/mongod.conf $MONGO_ROOT/mongod.conf \
+		&& mv $SOURCE_DIR/scripts/mongod.conf.osx $MONGODB_CONF \
 		&& mkdir -p /data/db \
-		&& mkdir -p /var/log/mongodb
-		printf " - MongoDB successfully installed @ ${MONGO_ROOT}\\n"
+		&& rm -rf $MONGODB_LINK_LOCATION \
+		&& ln -s $MONGODB_ROOT $MONGODB_LINK_LOCATION
+		printf " - MongoDB successfully installed @ ${MONGODB_ROOT}\\n"
 	else
-		printf " - MongoDB found with correct version @ ${MONGO_ROOT}.\\n"
-	fi
-	printf "Checking MongoDB C driver installation...\\n"
-	if [ ! -d $MONGO_C_DRIVER_ROOT ]; then
-		printf "Installing MongoDB C driver...\\n"
-		curl -LO https://github.com/mongodb/mongo-c-driver/releases/download/$MONGO_C_DRIVER_VERSION/mongo-c-driver-$MONGO_C_DRIVER_VERSION.tar.gz \
-		&& tar -xf mongo-c-driver-$MONGO_C_DRIVER_VERSION.tar.gz \
-		&& cd mongo-c-driver-$MONGO_C_DRIVER_VERSION \
-		&& mkdir -p cmake-build \
-		&& cd cmake-build \
-		&& cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DENABLE_BSON=ON -DENABLE_SSL=DARWIN -DENABLE_AUTOMATIC_INIT_AND_CLEANUP=OFF -DENABLE_STATIC=ON .. \
-		&& make -j"${CPU_CORE}" \
-		&& make install \
-		&& cd ../.. \
-		&& rm mongo-c-driver-$MONGO_C_DRIVER_VERSION.tar.gz
-		printf " - MongoDB C driver successfully installed @ ${MONGO_C_DRIVER_ROOT}.\\n"
-	else
-		printf " - MongoDB C driver found with correct version @ ${MONGO_C_DRIVER_ROOT}.\\n"
-	fi
-	printf "Checking MongoDB C++ driver installation...\\n"
-	if [ ! -d $MONGO_CXX_DRIVER_ROOT ]; then
-		printf "Installing MongoDB C++ driver...\\n"
-		git clone https://github.com/mongodb/mongo-cxx-driver.git --branch releases/v$MONGO_CXX_DRIVER_VERSION --depth 1 mongo-cxx-driver-$MONGO_CXX_DRIVER_VERSION \
-		&& cd mongo-cxx-driver-$MONGO_CXX_DRIVER_VERSION/build \
-		&& cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local .. \
-		&& make -j"${CPU_CORE}" VERBOSE=1 \
-		&& make install \
-		&& cd ../..
-		printf " - MongoDB C++ driver successfully installed @ ${MONGO_CXX_DRIVER_ROOT}.\\n"
-	else
-		printf " - MongoDB C++ driver found with correct version @ ${MONGO_CXX_DRIVER_ROOT}.\\n"
+		printf " - MongoDB found with correct version @ ${MONGODB_ROOT}.\\n"
 	fi
 
 
@@ -271,11 +235,11 @@
 		&& make -j"${CPU_CORE}" \
 		&& make install \
 		&& cd ../.. \
-		&& rm -f /usr/local/wasm \
-		&& ln -s $LLVM_CLANG_ROOT /usr/local/wasm
-		printf "WASM compiler successfully installed @ ${LLVM_CLANG_ROOT} (Symlinked to /usr/local/wasm)\\n"
+		&& rm -rf $LLVM_LINK_LOCATION \
+		&& ln -s $LLVM_CLANG_ROOT $LLVM_LINK_LOCATION
+		printf "WASM compiler successfully installed @ ${LLVM_CLANG_ROOT} (Symlinked to ${LLVM_LINK_LOCATION})\\n"
 	else
-		printf " - WASM found @ ${LLVM_CLANG_ROOT} (Symlinked to /usr/local/wasm).\\n"
+		printf " - WASM found @ ${LLVM_CLANG_ROOT} (Symlinked to ${LLVM_LINK_LOCATION}).\\n"
 	fi
 
 
@@ -284,7 +248,8 @@
 
 	function print_instructions()
 	{
-		printf "$( command -v mongod ) -f ${MONGODB_CONF} &\\n"
-		printf "cd ${BUILD_DIR}; make test\\n"
+		printf "MongoDB configuration @ ${MONGODB_CONF}\\n"
+		printf "Start MongoDB with: $( command -v mongod ) -f ${MONGODB_CONF} &\\n"
+		printf "Run EOSIO tests with: cd ${BUILD_DIR} && make test\\n"
 	return 0
 	}

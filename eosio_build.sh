@@ -31,13 +31,19 @@
 ##########################################################################
 
    VERSION=2.0 # Build script version
-   export SRC_LOCATION=/usr/local/src
+   export SRC_LOCATION=$HOME/src
+   export OPT_LOCATION=$HOME/opt
+   export VAR_LOCATION=$HOME/var
+   export ETC_LOCATION=$HOME/etc
 	export CMAKE_VERSION_MAJOR=3
 	export CMAKE_VERSION_MINOR=10
 	export CMAKE_VERSION_PATCH=2
 	export CMAKE_VERSION=${CMAKE_VERSION_MAJOR}.${CMAKE_VERSION_MINOR}.${CMAKE_VERSION_PATCH}
 	export MONGODB_VERSION=3.6.3
-   export MONGO_ROOT=/opt/mongodb
+   export MONGODB_ROOT=$OPT_LOCATION/mongodb-$MONGODB_VERSION
+   export MONGODB_LOG_LOCATION=$VAR_LOCATION/log/mongodb
+   export MONGODB_CONF=$ETC_LOCATION/mongod.conf
+   export MONGODB_LINK_LOCATION=$OPT_LOCATION/mongodb
 	export MONGO_C_DRIVER_VERSION=1.10.2
    export MONGO_C_DRIVER_ROOT=${SRC_LOCATION}/mongo-c-driver-${MONGO_C_DRIVER_VERSION}
 	export MONGO_CXX_DRIVER_VERSION=3.3
@@ -46,10 +52,22 @@
 	export BOOST_VERSION_MINOR=67
 	export BOOST_VERSION_PATCH=0
 	export BOOST_VERSION=${BOOST_VERSION_MAJOR}_${BOOST_VERSION_MINOR}_${BOOST_VERSION_PATCH}
-   export BOOST_ROOT="${SRC_LOCATION}/boost_${BOOST_VERSION}"
+   export BOOST_ROOT=$SRC_LOCATION/boost_$BOOST_VERSION
+   export BOOST_LINK_LOCATION=$OPT_LOCATION/boost
 	export LLVM_CLANG_VERSION=release_40
    export LLVM_CLANG_ROOT=${SRC_LOCATION}/llvm-${LLVM_CLANG_VERSION}
+   export LLVM_DIR=$SRC_LOCATION/llvm-$LLVM_CLANG_VERSION/lib/cmake/llvm
+   export WASM_LINK_LOCATION=$OPT_LOCATION/wasm
 	export TINI_VERSION=0.18.0
+   export PATH=$MONGODB_LINK_LOCATION/bin:$PATH
+
+   # Setup directories
+   mkdir -p $SRC_LOCATION
+   mkdir -p $OPT_LOCATION
+   mkdir -p $VAR_LOCATION
+   mkdir -p $VAR_LOCATION/log
+   mkdir -p $ETC_LOCATION
+   mkdir -p $MONGODB_LOG_LOCATION
    
    SOURCE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
    if [ "${SOURCE_DIR}" == "${PWD}" ]; then
@@ -65,7 +83,7 @@
    CORE_SYMBOL_NAME="SYS"
    START_MAKE=true
    TIME_BEGIN=$( date -u +%s )
-   
+
    txtbld=$(tput bold)
    bldred=${txtbld}$(tput setaf 1)
    txtrst=$(tput sgr0)
@@ -166,7 +184,8 @@
    popd &> /dev/null
 
    if [ "$ARCH" == "Linux" ]; then
-
+      export OS_NAME=$( cat /etc/os-release | grep ^NAME | cut -d'=' -f2 | sed 's/\"//gI' )
+      OPENSSL_ROOT_DIR=/usr/include/openssl
       if [ ! -e /etc/os-release ]; then
          printf "\\nEOSIO currently supports Amazon, Centos, Fedora, Mint & Ubuntu Linux only.\\n"
          printf "Please install on the latest version of one of these Linux distributions.\\n"
@@ -178,14 +197,6 @@
          printf "Exiting now.\\n"
          exit 1
       fi
-
-      mkdir -p $HOME/opt # WASM/LLVM and boost symlinks will exist under this directory
-
-      export OS_NAME=$( cat /etc/os-release | grep ^NAME | cut -d'=' -f2 | sed 's/\"//gI' )
-      export MONGODB_CONF=/opt/mongodb/mongod.conf
-      export LLVM_DIR=$SRC_LOCATION/llvm-$LLVM_CLANG_VERSION/lib/cmake/llvm
-      export PATH=/opt/mongodb/bin:$PATH
-      OPENSSL_ROOT_DIR=/usr/include/openssl
       case "$OS_NAME" in
          "Amazon Linux AMI"|"Amazon Linux")
             FILE="${SOURCE_DIR}/scripts/eosio_build_amazon.sh"
@@ -229,13 +240,10 @@
    fi
 
    if [ "$ARCH" == "Darwin" ]; then
-      export SRC_LOCATION=$HOME/src
       export OS_NAME=MacOSX
       FILE="${SOURCE_DIR}/scripts/eosio_build_darwin.sh"
       CXX_COMPILER=clang++
       C_COMPILER=clang
-      export MONGODB_CONF=/usr/local/etc/mongod.conf
-      export BOOST_ROOT="/usr/local/include/boost"
       OPENSSL_ROOT_DIR=/usr/local/opt/openssl
    fi
 

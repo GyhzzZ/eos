@@ -35,6 +35,7 @@
    export OPT_LOCATION=$HOME/opt
    export VAR_LOCATION=$HOME/var
    export ETC_LOCATION=$HOME/etc
+   export DATA_LOCATION=$HOME/data
 	export CMAKE_VERSION_MAJOR=3
 	export CMAKE_VERSION_MINOR=10
 	export CMAKE_VERSION_PATCH=2
@@ -44,6 +45,7 @@
    export MONGODB_LOG_LOCATION=$VAR_LOCATION/log/mongodb
    export MONGODB_CONF=$ETC_LOCATION/mongod.conf
    export MONGODB_LINK_LOCATION=$OPT_LOCATION/mongodb
+   export MONGODB_DATA_LOCATION=$DATA_LOCATION/mongodb
 	export MONGO_C_DRIVER_VERSION=1.10.2
    export MONGO_C_DRIVER_ROOT=${SRC_LOCATION}/mongo-c-driver-${MONGO_C_DRIVER_VERSION}
 	export MONGO_CXX_DRIVER_VERSION=3.3
@@ -68,6 +70,7 @@
    mkdir -p $VAR_LOCATION/log
    mkdir -p $ETC_LOCATION
    mkdir -p $MONGODB_LOG_LOCATION
+   mkdir -p $MONGODB_DATA_LOCATION
    
    SOURCE_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
    if [ "${SOURCE_DIR}" == "${PWD}" ]; then

@@ -96,20 +96,18 @@
 	DISPLAY=""
 	DEP=""
 
-	printf "Checking dependencies.\\n"
+	printf "\\nChecking dependencies...\\n"
 	var_ifs="${IFS}"
 	IFS=","
-	while read -r name tester testee brewname uri
-	do
-		printf "Checking %s ... " "${name}"
+	while read -r name tester testee brewname uri; do
 		if [ "${tester}" "${testee}" ]; then
-			printf " %s found\\n" "${name}"
+			printf " - %s found\\n" "${name}"
 			continue
 		fi
 		# resolve conflict with homebrew glibtool and apple/gnu installs of libtool
 		if [ "${testee}" == "/usr/local/bin/glibtool" ]; then
 			if [ "${tester}" "/usr/local/bin/libtool" ]; then
-				printf " %s found\\n" "${name}"
+				printf " - %s found\\n" "${name}"
 				continue
 			fi
 		fi
@@ -118,19 +116,23 @@
 		fi
 		DEP=$DEP"${brewname} "
 		DISPLAY="${DISPLAY}${COUNT}. ${name}\\n"
-		printf " %s ${bldred}NOT${txtrst} found.\\n" "${name}"
+		printf " - %s ${bldred}NOT${txtrst} found.\\n" "${name}"
 		(( COUNT++ ))
 	done < "${SOURCE_DIR}/scripts/eosio_build_darwin_deps"
 	IFS="${var_ifs}"
 
-	printf "Checking Python3 ... "
+	if [ ! -d /usr/local/Frameworks ]; then
+		printf "\\n${bldred}/usr/local/Framworks is necessary to brew install python@3. Run the following commands as sudo and try again:${txtrst}\\n"
+		printf "sudo mkdir /usr/local/Frameworks && sudo chown $(whoami):admin /usr/local/Frameworks\\n\\n"
+		exit 1;
+	fi
 	if [  -z "$( python3 -c 'import sys; print(sys.version_info.major)' 2>/dev/null )" ]; then
 		DEP=$DEP"python@3 "
 		DISPLAY="${DISPLAY}${COUNT}. Python 3\\n"
-		printf " python3 ${bldred}NOT${txtrst} found.\\n"
+		printf " - python3 ${bldred}NOT${txtrst} found.\\n"
 		(( COUNT++ ))
 	else
-		printf " Python3 found\\n"
+		printf " - Python3 found\\n"
 	fi
 
 	if [ $COUNT -gt 1 ]; then
@@ -145,7 +147,7 @@
 					fi
 					"${XCODESELECT}" --install 2>/dev/null;
 
-					printf "\\nDo you wish to update homebrew packages?\\n\\n"
+					printf "\\nDo you wish to update homebrew packages first?\\n"
 					select yn in "Yes" "No"; do
 						case $yn in
 							[Yy]* ) 
@@ -176,7 +178,7 @@
 			esac
 		done
 	else
-		printf "\\nNo required Home Brew dependencies to install.\\n"
+		printf "No required Home Brew dependencies to install.\\n"
 	fi
 
 
@@ -192,9 +194,10 @@
 		&& ./bootstrap.sh "--prefix=${SRC_LOCATION}/boost_${BOOST_VERSION}" \
 		&& ./b2 -q -j$(sysctl -in machdep.cpu.core_count) install \
 		&& cd .. \
-		&& rm -f boost_$BOOST_VERSION.tar.bz2
+		&& rm -f boost_$BOOST_VERSION.tar.bz2 \
 		&& rm -rf $BOOST_LINK_LOCATION \
-		&& ln -s $BOOST_ROOT $BOOST_LINK_LOCATION
+		&& ln -s $BOOST_ROOT $BOOST_LINK_LOCATION \
+		|| exit 1
 		printf " - Boost library successfully installed @ ${BOOST_ROOT}.\\n"
 	else
 		printf " - Boost library found with correct version @ ${BOOST_ROOT}.\\n"
@@ -210,9 +213,10 @@
 		&& touch $MONGODB_LOG_LOCATION/mongod.log \
 		&& rm -f mongodb-osx-ssl-x86_64-$MONGODB_VERSION.tgz \
 		&& mv $SOURCE_DIR/scripts/mongod.conf.osx $MONGODB_CONF \
-		&& mkdir -p /data/db \
+		&& mkdir -p $MONGODB_DATA_LOCATION \
 		&& rm -rf $MONGODB_LINK_LOCATION \
-		&& ln -s $MONGODB_ROOT $MONGODB_LINK_LOCATION
+		&& ln -s $MONGODB_ROOT $MONGODB_LINK_LOCATION \
+		|| exit 1
 		printf " - MongoDB successfully installed @ ${MONGODB_ROOT}\\n"
 	else
 		printf " - MongoDB found with correct version @ ${MONGODB_ROOT}.\\n"
@@ -235,11 +239,12 @@
 		&& make -j"${CPU_CORE}" \
 		&& make install \
 		&& cd ../.. \
-		&& rm -rf $LLVM_LINK_LOCATION \
-		&& ln -s $LLVM_CLANG_ROOT $LLVM_LINK_LOCATION
-		printf "WASM compiler successfully installed @ ${LLVM_CLANG_ROOT} (Symlinked to ${LLVM_LINK_LOCATION})\\n"
+		&& rm -rf $WASM_LINK_LOCATION \
+		&& ln -s $LLVM_CLANG_ROOT $WASM_LINK_LOCATION \
+		|| exit 1
+		printf "WASM compiler successfully installed @ ${LLVM_CLANG_ROOT} (Symlinked to ${WASM_LINK_LOCATION})\\n"
 	else
-		printf " - WASM found @ ${LLVM_CLANG_ROOT} (Symlinked to ${LLVM_LINK_LOCATION}).\\n"
+		printf " - WASM found @ ${LLVM_CLANG_ROOT} (Symlinked to ${WASM_LINK_LOCATION}).\\n"
 	fi
 
 
@@ -248,7 +253,7 @@
 
 	function print_instructions()
 	{
-		printf "MongoDB configuration @ ${MONGODB_CONF}\\n"
+		printf "Append 'PATH=$MONGODB_LINK_LOCATION/bin:$PATH' to .bashrc/.profile\\n\\n"
 		printf "Start MongoDB with: $( command -v mongod ) -f ${MONGODB_CONF} &\\n"
 		printf "Run EOSIO tests with: cd ${BUILD_DIR} && make test\\n"
 	return 0

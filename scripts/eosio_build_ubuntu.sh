@@ -155,7 +155,8 @@
     	&& make -j"${CPU_CORE}" \
     	&& make install \
     	&& cd .. \
-    	&& rm -f cmake-$CMAKE_VERSION.tar.gz
+    	&& rm -f cmake-$CMAKE_VERSION.tar.gz \
+		|| exit 1
 		printf " - CMAKE successfully installed @ ${CMAKE}.\\n"
 	else
 		printf " - CMAKE found @ ${CMAKE}.\\n"
@@ -176,7 +177,8 @@
 		&& cd .. \
 		&& rm -f boost_$BOOST_VERSION.tar.bz2 \
 		&& rm -rf $BOOST_LINK_LOCATION \
-		&& ln -s $BOOST_ROOT $BOOST_LINK_LOCATION
+		&& ln -s $BOOST_ROOT $BOOST_LINK_LOCATION \
+		|| exit 1
 		printf " - Boost library successfully installed @ ${BOOST_ROOT} (Symlinked to ${BOOST_LINK_LOCATION}).\\n"
 	else
 		printf " - Boost library found with correct version @ ${BOOST_ROOT} (Symlinked to ${BOOST_LINK_LOCATION}).\\n"
@@ -195,9 +197,10 @@
 		&& touch $MONGODB_LOG_LOCATION/mongod.log \
 		&& rm -f mongodb-linux-x86_64-ubuntu$OS_MAJ$OS_MIN-$MONGODB_VERSION.tgz \
 		&& mv $SOURCE_DIR/scripts/mongod.conf.linux $MONGODB_CONF \
-		&& mkdir -p /data/db \
+		&& mkdir -p $MONGODB_DATA_LOCATION \
 		&& rm -rf $MONGODB_LINK_LOCATION \
-		&& ln -s $MONGODB_ROOT $MONGODB_LINK_LOCATION
+		&& ln -s $MONGODB_ROOT $MONGODB_LINK_LOCATION \
+		|| exit 1
 		printf " - MongoDB successfully installed @ ${MONGODB_ROOT} (Symlinked to ${MONGODB_LINK_LOCATION}).\\n"
 	else
 		printf " - MongoDB found with correct version @ ${MONGODB_ROOT} (Symlinked to ${MONGODB_LINK_LOCATION}).\\n"
@@ -214,7 +217,8 @@
 		&& make -j"${CPU_CORE}" \
 		&& make install \
 		&& cd ../.. \
-		&& rm mongo-c-driver-$MONGO_C_DRIVER_VERSION.tar.gz
+		&& rm mongo-c-driver-$MONGO_C_DRIVER_VERSION.tar.gz \
+		|| exit 1
 		printf " - MongoDB C driver successfully installed @ ${MONGO_C_DRIVER_ROOT}.\\n"
 	else
 		printf " - MongoDB C driver found with correct version @ ${MONGO_C_DRIVER_ROOT}.\\n"
@@ -227,7 +231,8 @@
 		&& cmake -DBUILD_SHARED_LIBS=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local .. \
 		&& make -j"${CPU_CORE}" VERBOSE=1 \
 		&& make install \
-		&& cd ../..
+		&& cd ../.. \
+		|| exit 1
 		printf " - MongoDB C++ driver successfully installed @ ${MONGO_CXX_DRIVER_ROOT}.\\n"
 	else
 		printf " - MongoDB C++ driver found with correct version @ ${MONGO_CXX_DRIVER_ROOT}.\\n"
@@ -250,11 +255,12 @@
 		&& make -j"${CPU_CORE}" \
 		&& make install \
 		&& cd ../.. \
-		&& rm -rf $LLVM_LINK_LOCATION \
-		&& ln -s $LLVM_CLANG_ROOT $LLVM_LINK_LOCATION
-		printf "WASM compiler successfully installed @ ${LLVM_CLANG_ROOT} (Symlinked to ${LLVM_LINK_LOCATION})\\n"
+		&& rm -rf $WASM_LINK_LOCATION \
+		&& ln -s $LLVM_CLANG_ROOT $WASM_LINK_LOCATION \
+		|| exit 1
+		printf "WASM compiler successfully installed @ ${LLVM_CLANG_ROOT} (Symlinked to ${WASM_LINK_LOCATION})\\n"
 	else
-		printf " - WASM found @ ${LLVM_CLANG_ROOT} (Symlinked to ${LLVM_LINK_LOCATION}).\\n"
+		printf " - WASM found @ ${LLVM_CLANG_ROOT} (Symlinked to ${WASM_LINK_LOCATION}).\\n"
 	fi
 
 
@@ -263,8 +269,8 @@
 
 	function print_instructions()
 	{
-		printf "$( command -v mongod ) -f ${MONGODB_CONF} &\\n"
-		printf "Ensure ${MONGODB_ROOT}/bin is in your \$PATH \\n"
-		printf "cd ${BUILD_DIR}; make test\\n\\n"
+		printf "Append 'PATH=$MONGODB_LINK_LOCATION/bin:$PATH' to .bashrc/.profile\\n\\n"
+		printf "Start MongoDB with: $( command -v mongod ) -f ${MONGODB_CONF} &\\n"
+		printf "Run EOSIO tests with: cd ${BUILD_DIR} && make test\\n"
 	return 0
 	}

@@ -120,7 +120,7 @@
 		DISPLAY="${DISPLAY}${COUNT}. ${name}\\n"
 		printf " %s ${bldred}NOT${txtrst} found.\\n" "${name}"
 		(( COUNT++ ))
-	done < "${SOURCE_DIR}/scripts/eosio_build_dep"
+	done < "${SOURCE_DIR}/scripts/eosio_build_darwin_deps"
 	IFS="${var_ifs}"
 
 	printf "Checking Python3 ... "

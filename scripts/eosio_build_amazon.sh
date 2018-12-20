@@ -2,7 +2,7 @@
 
 	MEM_MEG=$( free -m | sed -n 2p | tr -s ' ' | cut -d\  -f2 )
 	CPU_SPEED=$( lscpu | grep "MHz" | tr -s ' ' | cut -d\  -f3 | cut -d'.' -f1 )
-	CPU_CORE=$(nproc)
+	CPU_CORE=$( nproc )
 	MEM_GIG=$(( ((MEM_MEG / 1000) / 2) ))
 	JOBS=$(( MEM_GIG > CPU_CORE ? CPU_CORE : MEM_GIG ))
 
@@ -148,11 +148,11 @@
 		&& ./b2 -q -j"${CPU_CORE}" install \
 		&& cd .. \
 		&& rm -f boost_$BOOST_VERSION.tar.bz2 \
-		&& rm -rf $HOME/opt/boost \
-		&& ln -s $BOOST_ROOT $HOME/opt/boost
-		printf " - Boost library successfully installed @ ${BOOST_ROOT}.\\n"
+		&& rm -rf $BOOST_LINK_LOCATION \
+		&& ln -s $BOOST_ROOT $BOOST_LINK_LOCATION
+		printf " - Boost library successfully installed @ ${BOOST_ROOT} (Symlinked to ${BOOST_LINK_LOCATION}).\\n"
 	else
-		printf " - Boost library found with correct version @ ${BOOST_ROOT}.\\n"
+		printf " - Boost library found with correct version @ ${BOOST_ROOT} (Symlinked to ${BOOST_LINK_LOCATION}).\\n"
 	fi
 
 
@@ -160,22 +160,20 @@
 
 
 	printf "Checking MongoDB installation...\\n"
-	# eosio_build.sh sets PATH with /opt/mongodb/bin
-    if [ ! -e $MONGODB_CONF ]; then
-		printf "Installing MongoDB...\\n"
-		curl -OL https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-amazon-$MONGODB_VERSION.tgz \
+    if [ ! -d $MONGODB_ROOT ]; then
+		printf "Installing MongoDB into ${MONGODB_ROOT}...\\n"
+		curl -OL https://fastdl.mongodb.org/osx/mongodb-linux-x86_64-amazon-$MONGODB_VERSION.tgz \
 		&& tar -xzvf mongodb-linux-x86_64-amazon-$MONGODB_VERSION.tgz \
-		&& mv $SRC_LOCATION/mongodb-linux-x86_64-amazon-$MONGODB_VERSION $MONGO_ROOT \
-		&& mkdir $MONGO_ROOT/data \
-		&& mkdir $MONGO_ROOT/log \
-		&& touch $MONGO_ROOT/log/mongod.log \
+		&& mv $SRC_LOCATION/mongodb-linux-x86_64-amazon-$MONGODB_VERSION $MONGODB_ROOT \
+		&& touch $MONGODB_LOG_LOCATION/mongod.log \
 		&& rm -f mongodb-linux-x86_64-amazon-$MONGODB_VERSION.tgz \
-		&& mv $SOURCE_DIR/scripts/mongod.conf $MONGO_ROOT/mongod.conf \
+		&& mv $SOURCE_DIR/scripts/mongod.conf.linux $MONGODB_CONF \
 		&& mkdir -p /data/db \
-		&& mkdir -p /var/log/mongodb
-		printf " - MongoDB successfully installed @ ${MONGO_ROOT}.\\n"
+		&& rm -rf $MONGODB_LINK_LOCATION \
+		&& ln -s $MONGODB_ROOT $MONGODB_LINK_LOCATION
+		printf " - MongoDB successfully installed @ ${MONGODB_ROOT} (Symlinked to ${MONGODB_LINK_LOCATION}).\\n"
 	else
-		printf " - MongoDB found with correct version @ ${MONGO_ROOT}.\\n"
+		printf " - MongoDB found with correct version @ ${MONGODB_ROOT} (Symlinked to ${MONGODB_LINK_LOCATION}).\\n"
 	fi
 	printf "Checking MongoDB C driver installation...\\n"
 	if [ ! -d $MONGO_C_DRIVER_ROOT ]; then
@@ -222,14 +220,14 @@
 		&& mkdir build \
 		&& cd build \
 		&& cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=.. -DLLVM_TARGETS_TO_BUILD= -DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=WebAssembly -DLLVM_ENABLE_RTTI=1 -DCMAKE_BUILD_TYPE=Release .. \
-		&& make -j"${CPU_CORE}" \
+		&& make -j$( nproc ) \
 		&& make install \
 		&& cd ../.. \
-		&& rm -f $HOME/opt/wasm \
-		&& ln -s $LLVM_CLANG_ROOT $HOME/opt/wasm
-		printf "WASM compiler successfully installed @ ${LLVM_CLANG_ROOT} (Symlinked to ${HOME}/opt/wasm)\\n"
+		&& rm -rf $LLVM_LINK_LOCATION \
+		&& ln -s $LLVM_CLANG_ROOT $LLVM_LINK_LOCATION
+		printf "WASM compiler successfully installed @ ${LLVM_CLANG_ROOT} (Symlinked to ${LLVM_LINK_LOCATION})\\n"
 	else
-		printf " - WASM found @ ${LLVM_CLANG_ROOT} (Symlinked to ${HOME}/opt/wasm).\\n"
+		printf " - WASM found @ ${LLVM_CLANG_ROOT} (Symlinked to ${LLVM_LINK_LOCATION}).\\n"
 	fi
 
 
@@ -239,7 +237,7 @@
 	function print_instructions()
 	{
 		printf "$( command -v mongod ) -f ${MONGODB_CONF} &\\n"
-		printf "Ensure ${MONGO_ROOT}/bin is in your \$PATH"
+		printf "Ensure ${MONGODB_ROOT}/bin is in your \$PATH"
 		printf "cd ${BUILD_DIR}; make test\\n\\n"
 		return 0
 	}

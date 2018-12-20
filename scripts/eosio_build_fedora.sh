@@ -39,7 +39,7 @@
 		exit 1;
 	fi
 
-	printf "Checking Yum installation...\\n"
+	printf "\\nChecking Yum installation...\\n"
 	if ! YUM=$( command -v yum 2>/dev/null ); then
 			printf "!! Yum must be installed to compile EOS.IO !!\\n"
 			printf "Exiting now.\\n"
@@ -72,10 +72,10 @@
 	COUNT=1
 	DISPLAY=""
 	DEP=""
-	printf "Checking YUM for installed dependencies.\\n"
+	printf "Checking YUM for installed dependencies...\\n"
 	for (( i=0; i<${#DEP_ARRAY[@]}; i++ )); do
-		pkg=$( "${YUM}" info "${DEP_ARRAY[$i]}" 2>/dev/null | grep Repo | tr -s ' ' | cut -d: -f2 | sed 's/ //g' )
-		if [ "$pkg" != "installed" ]; then
+		pkg=$( rpm -qi "${DEP_ARRAY[$i]}" 2>/dev/null | grep Name )
+		if [ -z $pkg ]; then
 			DEP=$DEP" ${DEP_ARRAY[$i]} "
 			DISPLAY="${DISPLAY}${COUNT}. ${DEP_ARRAY[$i]}\\n"
 			printf "!! Package %s ${bldred} NOT ${txtrst} found !!\\n" "${DEP_ARRAY[$i]}"
@@ -236,7 +236,7 @@
 	function print_instructions()
 	{
 		printf "$( command -v mongod ) -f ${MONGODB_CONF} &\\n"
-		printf "Ensure ${MONGO_ROOT}/bin is in your \$PATH"
+		printf "Ensure ${MONGO_ROOT}/bin is in your \$PATH\\n"
 		printf "cd ${BUILD_DIR}; make test\\n\\n"
 	return 0;
 	}

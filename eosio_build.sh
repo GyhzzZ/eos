@@ -65,6 +65,7 @@
    CORE_SYMBOL_NAME="SYS"
    START_MAKE=true
    TIME_BEGIN=$( date -u +%s )
+   
    txtbld=$(tput bold)
    bldred=${txtbld}$(tput setaf 1)
    txtrst=$(tput sgr0)

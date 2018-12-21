@@ -227,7 +227,7 @@
 	printf "Checking MongoDB installation...\\n"
     if [ ! -d $MONGODB_ROOT ]; then
 		printf "Installing MongoDB into ${MONGODB_ROOT}...\\n"
-		curl -OL https://fastdl.mongodb.org/osx/mongodb-linux-x86_64-amazon-$MONGODB_VERSION.tgz \
+		curl -OL https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-amazon-$MONGODB_VERSION.tgz \
 		&& tar -xzvf mongodb-linux-x86_64-amazon-$MONGODB_VERSION.tgz \
 		&& mv $SRC_LOCATION/mongodb-linux-x86_64-amazon-$MONGODB_VERSION $MONGODB_ROOT \
 		&& touch $MONGODB_LOG_LOCATION/mongod.log \

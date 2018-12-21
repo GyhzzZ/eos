@@ -244,6 +244,7 @@
 
    if [ "$ARCH" == "Darwin" ]; then
       export OS_NAME=MacOSX
+      export PATH=/usr/local/opt/gettext/bin:$PATH
       FILE="${SOURCE_DIR}/scripts/eosio_build_darwin.sh"
       CXX_COMPILER=clang++
       C_COMPILER=clang
@@ -299,13 +300,12 @@
    fi
 
    if [ -z ${JOBS} ]; then JOBS=$CPU_CORE; fi # Future proofing: Ensure $JOBS is set (usually set in scripts/eosio_build_*.sh scripts)
-   if ! make -j"${JOBS}"
-   then
+   if ! make -j"${JOBS}"; then
       printf "\\n>>>>>>>>>>>>>>>>>>>> MAKE building EOSIO has exited with the above error.\\n\\n"
       exit -1
    fi
 
-   TIME_END=$(( $(date -u +%s) - ${TIME_BEGIN} ))
+   TIME_END=$(( $(date -u +%s) - $TIME_BEGIN ))
 
    printf "\n\n${bldred}\t _______  _______  _______ _________ _______\n"
    printf '\t(  ____ \(  ___  )(  ____ \\\\__   __/(  ___  )\n'

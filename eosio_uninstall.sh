@@ -10,19 +10,14 @@ binaries=(cleos
           nodeos
           eosio-applesdemo)
 
-if [ -d "/usr/local/eosio" ]; then
+if [ -d "${HOME}/opt/eosio" ]; then
    printf "\tDo you wish to remove this install? (requires sudo)\n"
    select yn in "Yes" "No"; do
       case $yn in
          [Yy]* )
-            if [ "$(id -u)" -ne 0 ]; then
-               printf "\n\tThis requires sudo, please run ./eosio_uninstall.sh with sudo\n\n"
-               exit -1
-            fi
-
-            pushd /usr/local &> /dev/null
+            pushd ~/opt &> /dev/null
             rm -rf eosio
-            pushd bin &> /dev/null
+            pushd ../bin &> /dev/null
             for binary in ${binaries[@]}; do
                rm ${binary}
             done

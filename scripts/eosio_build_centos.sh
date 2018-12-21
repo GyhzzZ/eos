@@ -306,8 +306,8 @@
 	function print_instructions()
 	{
 		printf "source /opt/rh/python33/enable\\n"
-		printf "Append 'PATH=$MONGODB_LINK_LOCATION/bin:$PATH' to .bashrc/.profile\\n\\n"
-		printf "Start MongoDB with: $( command -v mongod ) -f ${MONGODB_CONF} &\\n"
-		printf "Run EOSIO tests with: cd ${BUILD_DIR} && make test\\n"
+		printf "PATH=$MONGODB_LINK_LOCATION/bin:\$PATH >> .profile\\n"
+		printf "$( command -v mongod ) -f ${MONGODB_CONF} &\\n"
+		printf "cd ${BUILD_DIR} && make test\\n"
 		return 0
 	}

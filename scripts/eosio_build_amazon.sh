@@ -45,15 +45,11 @@ fi
 
 printf "Yum installation found at ${YUM}.\\n"
 
-if [[ "${OS_NAME}" == "Amazon Linux AMI" ]]; then
-	DEP_ARRAY=( git gcc72.x86_64 gcc72-c++.x86_64 autoconf automake libtool make bzip2 \
-	bzip2-devel.x86_64 openssl-devel.x86_64 gmp-devel.x86_64 libstdc++72.x86_64 \
-	python27.x86_64 python33-devel.x86_64 libedit-devel.x86_64)
-else
-	DEP_ARRAY=( git gcc.x86_64 gcc-c++.x86_64 autoconf automake libtool make bzip2 \
-	bzip2-devel.x86_64 openssl-devel.x86_64 gmp-devel.x86_64 libstdc++.x86_64 \
-	python3.x86_64 python3-devel.x86_64 libedit-devel.x86_64)
-fi
+
+DEP_ARRAY=( sudo procps which gcc72.x86_64 gcc72-c++.x86_64 autoconf automake libtool make \
+    		bzip2 bzip2-devel openssl-devel gmp.x86_64 gmp-devel libstdc++72 python27 python27-devel python34-devel \
+    		libedit-devel.x86_64 ncurses-devel.x86_64 swig.x86_64 wget file 
+)
 COUNT=1
 DISPLAY=""
 DEP=""

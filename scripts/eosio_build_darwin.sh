@@ -16,9 +16,10 @@ avail_blks=$(df . | tail -1 | awk '{print $4}')
 DISK_TOTAL=$((total_blks / gbfactor ))
 DISK_AVAIL=$((avail_blks / gbfactor ))
 
-# Enter working directory
-mkdir -p $SRC_LOCATION
-cd $SRC_LOCATION
+COUNT=1
+PERMISSION_GETTEXT=0
+DISPLAY=""
+DEP=""
 
 printf "\\nOS name: ${OS_NAME}\\n"
 printf "OS Version: ${OS_VER}\\n"
@@ -90,11 +91,6 @@ then
 fi
 
 printf "Home Brew installation found @ ${BREW}\\n"
-
-COUNT=1
-PERMISSION_GETTEXT=0
-DISPLAY=""
-DEP=""
 
 printf "\\nChecking dependencies...\\n"
 var_ifs="${IFS}"
@@ -215,6 +211,7 @@ if [ ! -d $MONGODB_ROOT ]; then
 	&& mv $SOURCE_DIR/scripts/mongod.conf.osx $MONGODB_CONF \
 	&& mkdir -p $MONGODB_DATA_LOCATION \
 	&& rm -rf $MONGODB_LINK_LOCATION \
+	&& rm -rf $BIN_LOCATION/mongod \
 	&& ln -s $MONGODB_ROOT $MONGODB_LINK_LOCATION \
 	&& ln -s $MONGODB_LINK_LOCATION/bin/mongod $BIN_LOCATION/mongod \
 	|| exit 1

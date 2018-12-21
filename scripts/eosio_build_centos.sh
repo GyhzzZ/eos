@@ -13,12 +13,6 @@ DISK_AVAIL_KB=$( df . | tail -1 | awk '{print $4}' )
 DISK_TOTAL=$(( DISK_TOTAL_KB / 1048576 ))
 DISK_AVAIL=$(( DISK_AVAIL_KB / 1048576 ))
 
-# Enter working directory
-cd $SRC_LOCATION
-
-# Legacy path support (ln -s for boost/wasm) | TODO: Remove reliance on $HOME/opt for /opt
-mkdir -p $HOME/opt
-
 printf "\\nOS name: ${OS_NAME}\\n"
 printf "OS Version: ${OS_VER}\\n"
 printf "CPU speed: ${CPU_SPEED}Mhz\\n"

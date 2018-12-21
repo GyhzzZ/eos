@@ -9,6 +9,15 @@ JOBS=$(( MEM_GIG > CPU_CORE ? CPU_CORE : MEM_GIG ))
 DISK_TOTAL=$( df -h . | grep /dev | tr -s ' ' | cut -d\  -f2 | sed 's/[^0-9]//' )
 DISK_AVAIL=$( df -h . | grep /dev | tr -s ' ' | cut -d\  -f4 | sed 's/[^0-9]//' )
 
+DEP_ARRAY=( 
+	sudo procps which gcc72 gcc72-c++ autoconf automake libtool make \
+    bzip2 bzip2-devel openssl-devel gmp gmp-devel libstdc++72 python27 python27-devel python34-devel \
+    libedit-devel ncurses-devel swig wget file
+)
+COUNT=1
+DISPLAY=""
+DEP=""
+
 printf "\\nOS name: %s\\n" "${OS_NAME}"
 printf "OS Version: %s\\n" "${OS_VER}"
 printf "CPU speed: %sMhz\\n" "${CPU_SPEED}"
@@ -42,18 +51,7 @@ then
 	printf "\\nExiting now.\\n"
 	exit 1
 fi
-
 printf "Yum installation found at ${YUM}.\\n"
-
-
-DEP_ARRAY=( 
-	sudo procps which gcc72 gcc72-c++ autoconf automake libtool make \
-    bzip2 bzip2-devel openssl-devel gmp gmp-devel libstdc++72 python27 python27-devel python34-devel \
-    libedit-devel ncurses-devel swig wget file
-)
-COUNT=1
-DISPLAY=""
-DEP=""
 
 printf "\\nDo you wish to update YUM repositories?\\n\\n"
 select yn in "Yes" "No"; do

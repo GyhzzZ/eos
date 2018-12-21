@@ -237,7 +237,7 @@ if [ ! -d $MONGODB_ROOT ]; then
 	&& rm -rf $MONGODB_LINK_LOCATION \
 	&& rm -rf $BIN_LOCATION/mongod \
 	&& ln -s $MONGODB_ROOT $MONGODB_LINK_LOCATION \
-	&& ln -s $MONGODB_LINK_LOCATION/bin/mongod $BIN_LOCATION/mongod
+	&& ln -s $MONGODB_LINK_LOCATION/bin/mongod $BIN_LOCATION/mongod \
 	|| exit 1
 	printf " - MongoDB successfully installed @ ${MONGODB_ROOT} (Symlinked to ${MONGODB_LINK_LOCATION}).\\n"
 else

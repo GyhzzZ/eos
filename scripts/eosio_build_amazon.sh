@@ -240,7 +240,7 @@ printf "\\n"
 function print_instructions()
 {
 	printf "PATH=$MONGODB_LINK_LOCATION/bin:\$PATH >> .profile\\n"
-	printf "$( command -v mongod ) -f ${MONGODB_CONF} --logpath ${MONGODB_LOG_LOCATION}/mongod.log &\\n"
+	printf "$( command -v mongod ) --dbpath ${MONGODB_DATA_LOCATION} -f ${MONGODB_CONF} --logpath ${MONGODB_LOG_LOCATION}/mongod.log &\\n"
 	printf "cd ${BUILD_DIR} && make test\\n"
 	return 0
 }

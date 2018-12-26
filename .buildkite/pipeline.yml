@@ -138,13 +138,13 @@ steps:
 
   - command: |
         echo "--- :arrow_down: Downloading build directory" && \
-        buildkite-agent artifact download "build.tar.gz" . --step ":ubuntu: Build" && \
+        buildkite-agent artifact download "build.tar.gz" . --step ":ubuntu: 16.04 Build" && \
         tar -zxf build.tar.gz && \
         echo "--- :m: Starting MongoDB" && \
         $(which mongod) --fork --logpath "$(pwd)"/mongod.log && \
         echo "+++ :microscope: Running tests" && \
         cd /data/job/build && ctest -j8 -LE _tests --output-on-failure
-    label: ":ubuntu: Tests"
+    label: ":ubuntu: 16.04 Tests"
     agents:
       queue: "automation-large-builder-fleet"
     artifact_paths:
@@ -406,7 +406,7 @@ steps:
   #       image: "436617320021.dkr.ecr.us-west-2.amazonaws.com/ci:fedora27"
   #       workdir: /data/job
   #   timeout: 60
-  
+
   # - command: |
   #       echo "--- :arrow_down: Downloading build directory" && \
   #       buildkite-agent artifact download "build.tar.gz" . --step ":darwin: High Sierra Build" && \

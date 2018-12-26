@@ -263,7 +263,7 @@ cd $SRC_LOCATION # Enter working directory
 . "$FILE" # Execute OS specific build file
 
 printf "\\n========================================================================\\n"
-printf "\\n======================= Starting EOSIO.CDT Build =======================\\n"
+printf "======================= Starting EOSIO Build =======================\\n"
 printf "## CMAKE_BUILD_TYPE=%s\\n" "${CMAKE_BUILD_TYPE}"
 printf "## ENABLE_COVERAGE_TESTING=%s\\n" "${ENABLE_COVERAGE_TESTING}"
 printf "## DOXYGEN=%s\\n\\n" "${DOXYGEN}"

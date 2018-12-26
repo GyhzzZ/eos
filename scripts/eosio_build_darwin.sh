@@ -89,7 +89,6 @@ then
 		esac
 	done
 fi
-
 printf "Home Brew installation found @ ${BREW}\\n"
 
 printf "\\nChecking dependencies...\\n"
@@ -142,7 +141,7 @@ if [ $COUNT -gt 1 ]; then
 					sudo chown -R "$(whoami)" /usr/local/share
 				fi
 				"${XCODESELECT}" --install 2>/dev/null;
-
+				brew tap eosio/eosio
 				printf "\\nDo you wish to update homebrew packages first?\\n"
 				select yn in "Yes" "No"; do
 					case $yn in

@@ -132,7 +132,7 @@ fi
 
 if [ $COUNT -gt 1 ]; then
 	printf "\\nThe following dependencies are required to install EOSIO.\\n"
-	printf "\\n${DISPLAY}\\n\\n"
+	printf "\\n${DISPLAY}\\n"
 	echo "Do you wish to install these packages?"
 	select yn in "Yes" "No"; do
 		case $yn in
@@ -141,7 +141,6 @@ if [ $COUNT -gt 1 ]; then
 					sudo chown -R "$(whoami)" /usr/local/share
 				fi
 				"${XCODESELECT}" --install 2>/dev/null;
-				brew tap eosio/eosio
 				printf "\\nDo you wish to update homebrew packages first?\\n"
 				select yn in "Yes" "No"; do
 					case $yn in
@@ -160,6 +159,7 @@ if [ $COUNT -gt 1 ]; then
 					esac
 				done
 
+				brew tap eosio/eosio # Required to install mongo-cxx-driver with static library
 				printf "Installing Dependencies.\\n"
 				if ! "${BREW}" install --force ${DEP}
 				then

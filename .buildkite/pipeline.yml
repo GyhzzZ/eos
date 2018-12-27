@@ -1,25 +1,25 @@
 steps:
 
-  - command: |
-        echo "+++ :hammer: Building" && \
-        echo 1 | ./eosio_build.sh && \
-        echo "--- :compression: Compressing build directory" && \
-        tar -pczf build.tar.gz build/
-    label: ":ubuntu: 16.04 Build"
-    agents:
-      queue: "automation-large-builder-fleet"
-    artifact_paths: "build.tar.gz"
-    plugins:
-      ecr#v1.1.4:
-        login: true
-        account_ids: "436617320021"
-        no-include-email: true
-        region: "us-west-2"
-      docker#v2.1.0:
-        debug: true
-        image: "436617320021.dkr.ecr.us-west-2.amazonaws.com/ci:ubuntu16"
-        workdir: /data/job
-    timeout: 60
+  # - command: |
+  #       echo "+++ :hammer: Building" && \
+  #       echo 1 | ./eosio_build.sh && \
+  #       echo "--- :compression: Compressing build directory" && \
+  #       tar -pczf build.tar.gz build/
+  #   label: ":ubuntu: 16.04 Build"
+  #   agents:
+  #     queue: "automation-large-builder-fleet"
+  #   artifact_paths: "build.tar.gz"
+  #   plugins:
+  #     ecr#v1.1.4:
+  #       login: true
+  #       account_ids: "436617320021"
+  #       no-include-email: true
+  #       region: "us-west-2"
+  #     docker#v2.1.0:
+  #       debug: true
+  #       image: "436617320021.dkr.ecr.us-west-2.amazonaws.com/ci:ubuntu16"
+  #       workdir: /data/job
+  #   timeout: 60
 
   # - command: |
   #       echo "+++ :hammer: Building" && \
@@ -141,16 +141,16 @@ steps:
         buildkite-agent artifact download "build.tar.gz" . --step ":ubuntu: 16.04 Build" && \
         tar -zxf build.tar.gz && \
         echo "--- :m: Starting MongoDB" && \
-        $(which mongod) --fork --logpath "$(pwd)"/mongod.log && \
+        $( command -v mongod ) --dbpath ${MONGODB_DATA_LOCATION} -f ${MONGODB_CONF} --logpath ${MONGODB_LOG_LOCATION}/mongod.log && \
         echo "+++ :microscope: Running tests" && \
         cd /data/job/build && ctest -j8 -LE _tests --output-on-failure
     label: ":ubuntu: 16.04 Tests"
     agents:
       queue: "automation-large-builder-fleet"
     artifact_paths:
-      - "mongod.log"
-      - "build/genesis.json"
-      - "build/config.ini"
+      - "var/log/mongodb/mongod.log"
+      - "/data/job/build/genesis.json"
+      - "/data/job/build/config.ini"
     plugins:
       ecr#v1.1.4:
         login: true

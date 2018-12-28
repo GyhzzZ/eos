@@ -200,8 +200,8 @@ printf "\\n"
 printf "Checking Boost library (${BOOST_VERSION}) installation...\\n"
 if [ ! -d $BOOST_ROOT ]; then
 	printf "Installing Boost library...\\n"
-	curl -LO https://dl.bintray.com/boostorg/release/$BOOST_VERSION_MAJOR.$BOOST_VERSION_MINOR.$BOOST_VERSION_PATCH/source/boost_$BOOST_VERSION.tar.bz2 \
-	&& tar -xf boost_$BOOST_VERSION.tar.bz2 \
+	curl -LO https://dl.bintray.com/boostorg/release/$BOOST_VERSION/source/boost_$BOOST_VERSION.tar.bz2 \
+	&& tar -xvjf boost_$BOOST_VERSION.tar.bz2 \
 	&& cd boost_$BOOST_VERSION/ \
 	&& ./bootstrap.sh "--prefix=${BOOST_ROOT}" \
 	&& ./b2 -q -j"${CPU_CORE}" install \
@@ -210,9 +210,9 @@ if [ ! -d $BOOST_ROOT ]; then
 	&& rm -rf $BOOST_LINK_LOCATION \
 	&& ln -s $BOOST_ROOT $BOOST_LINK_LOCATION \
 	|| exit 1
-	printf " - Boost library successfully installed @ ${BOOST_ROOT}.\\n"
+	printf " - Boost library successfully installed @ ${BOOST_ROOT} (Symlinked to ${BOOST_LINK_LOCATION}).\\n"
 else
-	printf " - Boost library found with correct version @ ${BOOST_ROOT}.\\n"
+	printf " - Boost library found with correct version @ ${BOOST_ROOT} (Symlinked to ${BOOST_LINK_LOCATION}).\\n"
 fi
 
 
